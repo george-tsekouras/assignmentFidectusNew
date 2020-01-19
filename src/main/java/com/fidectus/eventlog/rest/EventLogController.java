@@ -26,7 +26,7 @@ public interface EventLogController {
             @ApiParam(value = "Save EventLogDto object with valid values. \n " +
                     "\"userId\" must be positive and greater than 0 (min(1))\n " +
                     "and the type that exists on EventLog.Enum")
-            @RequestBody @Valid EventLogDto eventLogDto);
+            EventLogDto eventLogDto);
 
     @ApiOperation(value = "API returns a list with all events of the user or an empty list", response = EventLogDto.class)
     @ApiResponses(value = {
@@ -38,5 +38,5 @@ public interface EventLogController {
     @LogExecutionTime
     ResponseEntity<List<EventLogDto>> getUserLogsById(
             @ApiParam(value = "The id of the User")
-            @PathVariable long id);
+            long id);
 }

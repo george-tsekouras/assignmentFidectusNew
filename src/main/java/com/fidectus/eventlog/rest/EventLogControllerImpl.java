@@ -25,7 +25,7 @@ public class EventLogControllerImpl implements EventLogController {
 
     @Override
     @PostMapping
-    public ResponseEntity<EventLogDto> saveEventLog(@Valid EventLogDto eventLogDto) {
+    public ResponseEntity<EventLogDto> saveEventLog(@Valid @RequestBody EventLogDto eventLogDto) {
         EventLog event = eventLogFromDto(eventLogDto);
         event = eventTypeFactory.getTypeService(event.getType()).save(event);
         return ResponseEntity.ok(eventLogToDto(event));

@@ -49,6 +49,7 @@ public class ErrorHandlingController extends ResponseEntityExceptionHandler {
 
     public ErrorHandlingController() {
         exceptionMapping(IllegalArgumentException.class, "Illegal Argument Error", BAD_REQUEST);
+        exceptionMapping(NumberFormatException.class, "Number Format Error", BAD_REQUEST);
         exceptionMapping(IllegalStateException.class, "Illegal State Error", BAD_REQUEST);
         exceptionMapping(DataIntegrityViolationException.class, "Unique Value Violation Error", CONFLICT);
         exceptionMapping(RuntimeException.class, "Run Time Exception", BAD_REQUEST);
