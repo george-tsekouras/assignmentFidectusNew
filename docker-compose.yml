@@ -1,0 +1,14 @@
+version: '3'
+services:
+  event-service:
+    container_name: event-service
+    build: .
+    ports:
+      - 8081:8081
+    environment:
+      - "SPRING_PROFILES_ACTIVE=production"
+    entrypoint: /bin/sh
+    command: >
+      -c "
+      java -jar event-log.jar
+      "
