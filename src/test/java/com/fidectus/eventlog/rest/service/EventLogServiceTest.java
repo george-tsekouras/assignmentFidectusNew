@@ -1,4 +1,4 @@
-package com.fidectus.eventlog.rest.service;
+package com.fidectus.eventlog.service;
 
 import com.fidectus.eventlog.domain.EventLog;
 import com.fidectus.eventlog.domain.EventType;
@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -41,6 +42,21 @@ public class EventLogServiceTest {
         event.setId(1L);
 
         eventLogDto = new EventLogDto(event.getType().toString(), event.getUserId(), null, null);
+    }
+
+    @Test
+    public void getEventByUserId_found() {
+        when(eventLogRepository.findAllByUserIdOrderByIdDesc(eventLogDto.getUserId())).thenReturn(List.of(event, event, event));
+        List<EventLog> list = eventLogService.getEventByUserIdOrderById(event.getUserId());
+        assertEquals(3, list.size());
+        assertEquals(eventLogDto.getType(), list.get(0).getType().toString());
+        list.forEach(event -> assertEquals(eventLogDto.getUserId(), event.getUserId()));
+    }
+
+    @Test
+    public void getEventByUserId_notFound() {
+        when(eventLogRepository.findAllByUserIdOrderByIdDesc(eventLogDto.getUserId())).thenReturn(new ArrayList<>());
+        assertThrows(IllegalArgumentException.class, () -> eventLogService.getEventByUserIdOrderById(event.getUserId()));
     }
 
     @Test

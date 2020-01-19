@@ -1,4 +1,4 @@
-package com.fidectus.eventlog.rest.integration;
+package com.fidectus.eventlog.integration;
 
 import com.fidectus.eventlog.domain.EventType;
 import com.fidectus.eventlog.dto.EventLogDto;
@@ -49,10 +49,26 @@ public class EventLogControllerIntegrationTest {
     }
 
     @Test
+    @Rollback
+    public void getUserLogsById_exist() {
+        assertThrows(HttpClientErrorException.BadRequest.class,() ->
+                restTemplate().getForEntity(host+"/event/user/" + eventLogDto.getUserId(), EventLogDto[].class));
+
+    }
+
+    @Test
+    @Rollback
+    public void getUserLogsById_withNullId_shouldReturnBadRequest() {
+        assertThrows(HttpClientErrorException.NotFound.class,() ->
+                restTemplate().getForEntity(host+"/event/user/", EventLogDto[].class));
+
+    }
+
+    @Test
     public void save_withTypeNull_shouldReturnBadRequest() {
         eventLogDto.setType(null);
         assertThrows(IllegalArgumentException.class,() ->
-            restTemplate().postForObject(host + "/event", eventLogDto, null));
+                restTemplate().postForObject(host + "/event", eventLogDto, null));
     }
 
     @Test

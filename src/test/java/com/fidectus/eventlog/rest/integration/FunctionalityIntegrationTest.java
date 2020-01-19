@@ -1,10 +1,11 @@
-package com.fidectus.eventlog.rest.integration;
+package com.fidectus.eventlog.integration;
 
 import com.fidectus.eventlog.domain.EventLog;
 import com.fidectus.eventlog.domain.EventType;
 import com.fidectus.eventlog.service.EventLogService;
 import com.fidectus.eventlog.service.EventTypeFactory;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,22 @@ public class FunctionalityIntegrationTest {
         testEvent = new EventLog(EventType.REGISTRATION, 5L, null, null);
     }
 
-    // ============================== EventLogService hash test ==============================
+    // ============================== EventLogService getListTests ==============================
+    @Test
+    public void getEventByUserIdOrderById_userHasHistoryLength_1(){
+        setUpUsersHistory(EventType.DELETED);
+        List<EventLog> list = eventLogService.getEventByUserIdOrderById(firstEvent.getUserId());
+        assertEquals(2, list.size());
+        assertSavedEventLogIsValid(list.get(1), EventType.REGISTRATION);
+        assertSavedEventLogIsValid(list.get(0), EventType.DELETED);
+    }
+
+    @Test
+    public void getEventByUserIdOrderById_userNotExist_shouldThrowIllegalArgumentException(){
+        assertThrows(IllegalArgumentException.class,() ->
+                eventLogService.getEventByUserIdOrderById(firstEvent.getUserId()));
+    }
+
     @Test
     public void hash_withNullCreateDate_shouldThrowNullPointerException() {
         firstEvent.setId(1L);
@@ -79,7 +95,6 @@ public class FunctionalityIntegrationTest {
         assertDoesNotThrow(() ->eventLogService.hash(firstEvent));
     }
 
-    // ============================== EventLogService getLastEventByUserId test ==============================
     @Test
     public void getLastEventByUserId_userDontExist_shouldReturnOptionalEmpty() {
         Optional<EventLog> optional = eventLogService.getLastEventByUserId(2L);

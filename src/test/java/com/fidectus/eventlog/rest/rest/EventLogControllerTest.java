@@ -1,10 +1,9 @@
-package com.fidectus.eventlog.rest.rest;
+package com.fidectus.eventlog.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fidectus.eventlog.domain.EventLog;
 import com.fidectus.eventlog.domain.EventType;
 import com.fidectus.eventlog.dto.EventLogDto;
-import com.fidectus.eventlog.rest.EventLogControllerImpl;
 import com.fidectus.eventlog.service.EventLogService;
 import com.fidectus.eventlog.service.EventTypeFactory;
 import com.fidectus.eventlog.service.impl.EventRegisterService;
@@ -21,17 +20,21 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.Mockito.when;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(EventLogControllerImpl.class)
@@ -120,6 +123,30 @@ public class EventLogControllerTest {
         reset(eventLogService);
         reset(eventRegisterService);
     }
+
+    @Test
+    public void getUserLogsById_success() throws Exception {
+        when(eventLogService.getEventByUserIdOrderById(savedEvent.getUserId())).thenReturn(List.of(savedEvent));
+        mvc.perform(get("/event/user/"+savedEvent.getUserId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)));
+        verify(eventLogService, VerificationModeFactory.times(1)).getEventByUserIdOrderById(savedEvent.getUserId());
+        reset(eventLogService);
+    }
+
+    @Test
+    public void getUserLogById_empty() throws Exception {
+        when(eventLogService.getEventByUserIdOrderById(savedEvent.getUserId())).thenReturn(new ArrayList<>());
+        mvc.perform(get("/event/user/"+savedEvent.getUserId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+        verify(eventLogService, VerificationModeFactory.times(1)).getEventByUserIdOrderById(savedEvent.getUserId());
+        reset(eventLogService);
+    }
+
+
+
+
 
     static String asJsonString(final Object obj) {
         try {

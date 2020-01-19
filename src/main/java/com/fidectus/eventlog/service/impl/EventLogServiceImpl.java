@@ -22,6 +22,14 @@ public class EventLogServiceImpl implements EventLogService {
     }
 
     @Override
+    public List<EventLog> getEventByUserIdOrderById(long userId) {
+        List<EventLog> list = eventLogRepository.findAllByUserIdOrderByIdDesc(userId);
+        if (list.isEmpty())
+            throw new IllegalArgumentException(String.format("User with id '%d' does not exists.", userId));
+        return list;
+    }
+
+    @Override
     public void hash(EventLog event) {
         if (event.getUserId() == null || event.getType() == null || event.getCreatedDate() == null)
             throw new NullPointerException("UserId, EventType and CreateDate should not be null");

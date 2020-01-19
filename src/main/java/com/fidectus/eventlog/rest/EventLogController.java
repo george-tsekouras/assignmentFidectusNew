@@ -7,9 +7,11 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
+import java.util.List;
 
 public interface EventLogController {
     @ApiOperation(value = "API Save the EventLog which need the \"userId\" and the \"type\" of the event", response = EventLogDto.class)
@@ -26,4 +28,15 @@ public interface EventLogController {
                     "and the type that exists on EventLog.Enum")
             @RequestBody @Valid EventLogDto eventLogDto);
 
+    @ApiOperation(value = "API returns a list with all events of the user or an empty list", response = EventLogDto.class)
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Successfully retrieve user events"),
+            @ApiResponse(code = 400, message = "If User does not exists."),
+            @ApiResponse(code = 405, message = "Method Not Allowed"),
+            @ApiResponse(code = 409, message = "Unique Value Violation Error")
+    })
+    @LogExecutionTime
+    ResponseEntity<List<EventLogDto>> getUserLogsById(
+            @ApiParam(value = "The id of the User")
+            @PathVariable long id);
 }

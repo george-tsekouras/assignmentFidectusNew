@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface EventLogService {
 
+    List<EventLog> getEventByUserIdOrderById(long userId);
+
     void hash(EventLog event);
 
     Optional<EventLog> getLastEventByUserId(Long userId);
